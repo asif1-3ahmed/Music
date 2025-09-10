@@ -32,6 +32,11 @@ def send_email(recipient, otp):
         print("Error sending email:", e)
         return False
 
+# ✅ New route for root URL
+@app.route('/')
+def home():
+    return render_template('forgotpassword.html')
+
 # Serve HTML pages
 @app.route('/forgotpassword')
 def forgotpassword_page():
