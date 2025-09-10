@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dolsy Music - Create Account</title>
   <style>
+    /* (your styling exactly as you provided) */
     body {
       font-family: "Poppins", sans-serif;
       background: #000;
@@ -25,174 +26,87 @@
       box-shadow: 0 4px 16px rgba(0,0,0,0.5);
       z-index: 1;
     }
-    h2 {
-      margin-bottom: 20px;
-      font-size: 24px;
-      font-weight: 600;
-    }
+    h2 { margin-bottom: 20px; font-size: 24px; font-weight: 600; }
     input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 16px;
-      border: none;
-      border-radius: 6px;
-      outline: none;
-      font-size: 14px;
+      width: 100%; padding: 12px; margin-bottom: 16px; border: none;
+      border-radius: 6px; outline: none; font-size: 14px;
     }
-    input::placeholder {
-      color: #555;
-      font-size: 14px;
-    }
+    input::placeholder { color: #555; font-size: 14px; }
     button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      background: #fff;
-      color: #000;
-      font-weight: 600;
-      cursor: pointer;
+      width: 100%; padding: 12px; border: none; border-radius: 6px;
+      background: #fff; color: #000; font-weight: 600; cursor: pointer;
       margin-top: 10px;
     }
-    button:hover {
-      background: #000;
-      color: #fff;
-      border: 2px solid #fff;
-    }
-    .links {
-      margin-top: 15px;
-      font-size: 14px;
-    }
-    .links a {
-      color: #fff;
-      text-decoration: none;
-      margin: 0 8px;
-    }
-    .links a:hover {
-      text-decoration: underline;
-    }
+    button:hover { background: #000; color: #fff; border: 2px solid #fff; }
+    .links { margin-top: 15px; font-size: 14px; }
+    .links a { color: #fff; text-decoration: none; margin: 0 8px; }
+    .links a:hover { text-decoration: underline; }
 
-    /* ✅ Success Overlay */
+    /* success overlay (identical animation) */
     .success-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.95);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 999;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95); display: flex; justify-content: center;
+      align-items: center; flex-direction: column; opacity: 0;
+      pointer-events: none; transition: opacity 0.3s ease; z-index: 999;
     }
-    .success-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
+    .success-overlay.active { opacity: 1; pointer-events: auto; }
+    .checkmark { width: 120px; height: 120px; stroke: #fff; stroke-width: 6;
+      fill: none; stroke-linecap: round; stroke-linejoin: round;
+      filter: drop-shadow(0 0 10px #fff); }
+    .checkmark path { stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawTick 0.8s ease forwards; }
+    @keyframes drawTick { 0% { stroke-dashoffset:100 } 60% { stroke-dashoffset:40 } 100% { stroke-dashoffset:0 } }
+    .success-overlay h1, .success-overlay p {
+      opacity: 0; animation: fadeInText 0.8s ease forwards; animation-delay: 1s; text-align:center;
     }
-    .checkmark {
-      width: 120px;
-      height: 120px;
-      stroke: #fff;
-      stroke-width: 6;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      filter: drop-shadow(0 0 10px #fff);
-    }
-    .checkmark path {
-      stroke-dasharray: 100;
-      stroke-dashoffset: 100;
-      animation: drawTick 0.8s ease forwards;
-    }
-    @keyframes drawTick {
-      0%   { stroke-dashoffset: 100; }
-      60%  { stroke-dashoffset: 40; }
-      100% { stroke-dashoffset: 0; }
-    }
-    .success-overlay h1, 
-    .success-overlay p {
-      opacity: 0;
-      animation: fadeInText 0.8s ease forwards;
-      animation-delay: 1s;
-      text-align: center;
-    }
-    .success-overlay h1 {
-      font-size: 24px;
-      margin: 15px 0 5px;
-      font-weight: 600;
-      color: #fff;
-    }
-    .success-overlay p {
-      font-size: 14px;
-      color: #ccc;
-    }
-    @keyframes fadeInText {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .success-overlay h1 { font-size:24px; margin:15px 0 5px; font-weight:600; color:#fff; }
+    .success-overlay p { font-size:14px; color:#ccc; }
+    @keyframes fadeInText { from { opacity:0; transform:translateY(10px)} to { opacity:1; transform:translateY(0)} }
   </style>
 </head>
 <body>
   <div class="create-box">
     <h2>Create Account</h2>
-    <form id="createForm" onsubmit="return handleCreate(event)">
-      <input type="text" id="newUsername" placeholder="Enter Username" required>
-      <input type="email" id="email" placeholder="Enter Email" required>
-      <input type="password" id="newPassword" placeholder="Enter Password" required>
-      <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-      <button type="submit">Create Account</button>
+
+    <!-- POST to /register (handled by Flask) -->
+    <form id="createForm" method="POST" action="{{ url_for('register_post') }}">
+      <input type="text" name="username" placeholder="Enter Username" required />
+      <input type="email" name="email" placeholder="Enter Email" required />
+      <input type="password" name="password" placeholder="Enter Password" required />
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
+      <button type="submit" onclick="return checkPassword()">Create Account</button>
     </form>
+
     <div class="links">
-      <a href="/">Back to Login</a>
+      <a href="{{ url_for('login_page') }}">Back to Login</a>
     </div>
   </div>
 
-  <!-- ✅ Success Animation Overlay -->
+  <!-- Success overlay (same animation) -->
   <div class="success-overlay" id="successBox">
     <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
       <path d="M14 27 L22 35 L38 16"/>
     </svg>
     <h1>Account Created Successfully!</h1>
-    <p>Redirecting to login...</p>
+    <p>Redirecting to home...</p>
   </div>
 
   <script>
-    async function handleCreate(event){
-      event.preventDefault();
-
-      const username = document.getElementById("newUsername").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("newPassword").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
-
-      if(password !== confirmPassword){
-        alert("❌ Passwords do not match!");
-        return false;
-      }
-
-      const res = await fetch("/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password })
-      });
-
-      const data = await res.json();
-      if(data.success){
-        window.location.href = `/otp?email=${encodeURIComponent(email)}`;
-      } else {
-        alert(data.message || "Failed to register");
-      }
+    function checkPassword(){
+      const pass = document.querySelector("input[name='password']").value;
+      const confirm = document.getElementById('confirmPassword').value;
+      if(pass !== confirm){ alert("❌ Passwords do not match!"); return false; }
+      return true;
     }
 
-    // ✅ Show success overlay after OTP verified
-    const params = new URLSearchParams(window.location.search);
-    if(params.get("verified") === "true"){
-      const successBox = document.getElementById("successBox");
-      successBox.classList.add("active");
-      setTimeout(()=>{
-        window.location.href = "/";
+    // Show overlay if register was verified (Flask will render template with variables)
+    const verified = "{{ verified or '' }}";
+    const createdUsername = "{{ created_username or '' }}";
+    if (verified === "true" && createdUsername){
+      const box = document.getElementById('successBox');
+      box.classList.add('active');
+      setTimeout(()=> {
+        // after animation, go home showing Hello
+        window.location.href = `/home?username=${encodeURIComponent(createdUsername)}`;
       }, 2500);
     }
   </script>
