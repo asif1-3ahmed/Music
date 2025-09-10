@@ -1,155 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dolsy Music - Create Account</title>
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: #000;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .create-box {
-      background: rgba(255,255,255,0.05);
-      padding: 40px;
-      border-radius: 12px;
-      width: 350px;
-      text-align: center;
-      backdrop-filter: blur(6px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-      z-index: 1;
-    }
-    h2 {
-      margin-bottom: 20px;
-      font-size: 24px;
-      font-weight: 600;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 16px;
-      border: none;
-      border-radius: 6px;
-      outline: none;
-      font-size: 14px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      background: #fff;
-      color: #000;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    button:hover {
-      background: #000;
-      color: #fff;
-      border: 2px solid #fff;
-    }
-    .links { margin-top: 15px; font-size: 14px; }
-    .links a { color: #fff; text-decoration: none; }
-    .links a:hover { text-decoration: underline; }
-
-    /* Success Overlay */
-    .success-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.95);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 999;
-    }
-    .success-overlay.active { opacity: 1; pointer-events: auto; }
-
-    .checkmark {
-      width: 120px; height: 120px;
-      stroke: #fff; stroke-width: 6;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      filter: drop-shadow(0 0 10px #fff);
-    }
-    .checkmark path {
-      stroke-dasharray: 100;
-      stroke-dashoffset: 100;
-      animation: drawTick 0.8s ease forwards;
-    }
-    @keyframes drawTick {
-      0% { stroke-dashoffset: 100; }
-      60% { stroke-dashoffset: 40; }
-      100% { stroke-dashoffset: 0; }
-    }
-    .success-overlay h1, .success-overlay p {
-      opacity: 0;
-      animation: fadeInText 0.8s ease forwards;
-      animation-delay: 1s;
-      text-align: center;
-    }
-    .success-overlay h1 { font-size: 24px; margin: 15px 0 5px; }
-    .success-overlay p { font-size: 14px; color: #ccc; }
-    @keyframes fadeInText {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account - Dolsy Music</title>
+<style>
+body{font-family:"Poppins",sans-serif;background:#000;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;}
+.create-box{background:#111;padding:30px;border-radius:8px;width:350px;text-align:center;position:relative;}
+h2{margin-bottom:20px;}
+input{width:95%;padding:10px;margin:10px 0;border:none;border-radius:6px;background:#000;color:#fff;}
+button{width:100%;padding:10px;border:none;border-radius:6px;background:#fff;color:#000;cursor:pointer;font-weight:600;}
+button:hover{background:#000;color:#fff;border:1px solid #fff;}
+.links{margin-top:12px;font-size:14px;}
+.links a{color:#fff;text-decoration:none;}
+.links a:hover{text-decoration:underline;}
+/* Success overlay */
+.success-overlay{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:#000;
+    display:flex;justify-content:center;align-items:center;flex-direction:column;
+    opacity:0;pointer-events:none;transition:opacity 0.3s ease;
+}
+.success-overlay.active{opacity:1;pointer-events:auto;}
+.checkmark{width:120px;height:120px;stroke:#fff;stroke-width:6;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.checkmark path{stroke-dasharray:100;stroke-dashoffset:100;animation:drawTick 0.8s forwards;}
+@keyframes drawTick{0%{stroke-dashoffset:100;}60%{stroke-dashoffset:40;}100%{stroke-dashoffset:0;}}
+.success-overlay h1,.success-overlay p{opacity:0;animation:fadeIn 0.8s forwards;animation-delay:1s;text-align:center;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+</style>
 </head>
 <body>
-  <div class="create-box">
-    <h2>Create Account</h2>
-    <form action="/register" method="POST" onsubmit="return checkPassword()">
-      <input type="text" name="username" placeholder="Enter Username" required>
-      <input type="email" name="email" placeholder="Enter Email" required>
-      <input type="password" name="password" placeholder="Enter Password" required>
-      <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-      <button type="submit">Create Account</button>
-    </form>
-    <div class="links"><a href="/">Back to Login</a></div>
-  </div>
+<div class="create-box">
+<h2>Create Account</h2>
+<form action="/register" method="POST" onsubmit="return checkPassword()">
+<input type="text" name="username" placeholder="Enter Username" required>
+<input type="email" name="email" placeholder="Enter Email" required>
+<input type="password" name="password" placeholder="Enter Password" required>
+<input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+<button type="submit">Create Account</button>
+</form>
+<div class="links"><a href="/">Back to Login</a></div>
+</div>
 
-  <!-- Success Animation -->
-  <div class="success-overlay" id="successBox">
-    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
-      <path d="M14 27 L22 35 L38 16"/>
-    </svg>
-    <h1>Account Created Successfully!</h1>
-    <p>Redirecting to dashboard...</p>
-  </div>
+<div class="success-overlay" id="successBox">
+<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+<path d="M14 27 L22 35 L38 16"/>
+</svg>
+<h1>Account Created Successfully!</h1>
+<p>Redirecting to homepage...</p>
+</div>
 
-  <script>
-    function checkPassword(){
-      const pass = document.querySelector("input[name='password']").value;
-      const confirm = document.getElementById('confirmPassword').value;
-      if(pass !== confirm){
-        alert("❌ Passwords do not match!");
-        return false;
-      }
-      return true;
-    }
-
-    const verified = "{{ verified or '' }}";
-    const createdUsername = "{{ created_username or '' }}";
-    if (verified === "true" && createdUsername){
-      const box = document.getElementById('successBox');
-      box.classList.add('active');
-      setTimeout(()=> {
-        window.location.href = `/home?username=${encodeURIComponent(createdUsername)}`;
-      }, 2500);
-    }
-  </script>
+<script>
+function checkPassword(){
+    const pass=document.querySelector("input[name='password']").value;
+    const confirm=document.getElementById('confirmPassword').value;
+    if(pass!==confirm){alert("❌ Passwords do not match!");return false;}
+    return true;
+}
+const verified="{{ verified or '' }}";
+const createdUsername="{{ created_username or '' }}";
+if(verified==="true" && createdUsername){
+    const box=document.getElementById('successBox');
+    box.classList.add('active');
+    setTimeout(()=>{window.location.href=`/home?username=${encodeURIComponent(createdUsername)}`;},2000);
+}
+</script>
 </body>
 </html>
