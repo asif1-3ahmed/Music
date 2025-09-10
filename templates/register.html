@@ -140,4 +140,61 @@
     <form id="createForm" onsubmit="return handleCreate(event)">
       <input type="text" id="newUsername" placeholder="Enter Username" required>
       <input type="email" id="email" placeholder="Enter Email" required>
-      <input type
+      <input type="password" id="newPassword" placeholder="Enter Password" required>
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+      <button type="submit">Create Account</button>
+    </form>
+    <div class="links">
+      <a href="/">Back to Login</a>
+    </div>
+  </div>
+
+  <!-- ✅ Success Animation Overlay -->
+  <div class="success-overlay" id="successBox">
+    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+      <path d="M14 27 L22 35 L38 16"/>
+    </svg>
+    <h1>Account Created Successfully!</h1>
+    <p>Redirecting to login...</p>
+  </div>
+
+  <script>
+    async function handleCreate(event){
+      event.preventDefault();
+
+      const username = document.getElementById("newUsername").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("newPassword").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      if(password !== confirmPassword){
+        alert("❌ Passwords do not match!");
+        return false;
+      }
+
+      const res = await fetch("/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      const data = await res.json();
+      if(data.success){
+        window.location.href = `/otp?email=${encodeURIComponent(email)}`;
+      } else {
+        alert(data.message || "Failed to register");
+      }
+    }
+
+    // ✅ Show success overlay after OTP verified
+    const params = new URLSearchParams(window.location.search);
+    if(params.get("verified") === "true"){
+      const successBox = document.getElementById("successBox");
+      successBox.classList.add("active");
+      setTimeout(()=>{
+        window.location.href = "/";
+      }, 2500);
+    }
+  </script>
+</body>
+</html>
