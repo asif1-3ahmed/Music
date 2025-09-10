@@ -66,6 +66,10 @@ def otp_page():
 def resetpassword_page():
     return render_template('resetpassword.html')
 
+@app.route('/account-created')
+def account_created_page():
+    return render_template('account_created.html')
+
 # -----------------------
 # API ROUTES
 # -----------------------
