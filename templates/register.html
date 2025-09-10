@@ -1,94 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Register - Dolsy Music</title>
-<style>
-body {
-  font-family: "Poppins", sans-serif;
-  background: #000;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-}
-.form-box {
-  background: rgba(255,255,255,0.05);
-  padding: 40px;
-  border-radius: 12px;
-  width: 350px;
-  text-align: center;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-}
-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 16px;
-  border: none;
-  border-radius: 6px;
-  outline: none;
-  font-size: 14px;
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-}
-input::placeholder { color: #aaa; }
-button {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  background: #fff;
-  color: #000;
-  font-weight: 600;
-  cursor: pointer;
-}
-button:hover {
-  background: #000;
-  color: #fff;
-  border: 2px solid #fff;
-}
-.links { margin-top: 15px; font-size: 14px; }
-.links a { color: #fff; text-decoration: none; }
-.links a:hover { text-decoration: underline; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dolsy Music - Create Account</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #000;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .create-box {
+      background: rgba(255,255,255,0.05);
+      padding: 40px;
+      border-radius: 12px;
+      width: 350px;
+      text-align: center;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      z-index: 1;
+    }
+    h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 16px;
+      border: none;
+      border-radius: 6px;
+      outline: none;
+      font-size: 14px;
+    }
+    input::placeholder {
+      color: #555;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      background: #fff;
+      color: #000;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #000;
+      color: #fff;
+      border: 2px solid #fff;
+    }
+    .links {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    .links a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 8px;
+    }
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    /* ✅ Success Overlay */
+    .success-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 999;
+    }
+    .success-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .checkmark {
+      width: 120px;
+      height: 120px;
+      stroke: #fff;
+      stroke-width: 6;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 10px #fff);
+    }
+    .checkmark path {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: drawTick 0.8s ease forwards;
+    }
+    @keyframes drawTick {
+      0%   { stroke-dashoffset: 100; }
+      60%  { stroke-dashoffset: 40; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .success-overlay h1, 
+    .success-overlay p {
+      opacity: 0;
+      animation: fadeInText 0.8s ease forwards;
+      animation-delay: 1s;
+      text-align: center;
+    }
+    .success-overlay h1 {
+      font-size: 24px;
+      margin: 15px 0 5px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .success-overlay p {
+      font-size: 14px;
+      color: #ccc;
+    }
+    @keyframes fadeInText {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-<div class="form-box">
-<h2>Create Account</h2>
-<form id="registerForm">
-<input type="text" id="username" placeholder="Username" required>
-<input type="email" id="email" placeholder="Email" required>
-<input type="password" id="password" placeholder="Password" required>
-<input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-<button type="submit" id="registerBtn">Create Account</button>
-</form>
-<div class="links"><a href="/">Back to Login</a></div>
-</div>
-
-<script>
-const registerForm=document.getElementById('registerForm');
-const registerBtn=document.getElementById('registerBtn');
-registerForm.addEventListener('submit', async e=>{
-  e.preventDefault();
-  registerBtn.disabled=true;
-  const username=document.getElementById('username').value.trim();
-  const email=document.getElementById('email').value.trim();
-  const password=document.getElementById('password').value;
-  const confirm=document.getElementById('confirmPassword').value;
-  if(password!==confirm){ alert("Passwords do not match!"); registerBtn.disabled=false; return; }
-  const res=await fetch('/register-temp',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({username,email,password})
-  });
-  const data=await res.json();
-  if(data.success){ window.location.href=`/otp?email=${encodeURIComponent(email)}&type=register`; }
-  else{ alert(data.message); registerBtn.disabled=false; }
-});
-</script>
-</body>
-</html>
+  <div class="create-box">
+    <h2>Create Account</h2>
+    <form id="createForm" onsubmit="return handleCreate(event)">
+      <input type="text" id="newUsername" placeholder="Enter Username" required>
+      <input type="email" id="email" placeholder="Enter Email" required>
+      <input type
