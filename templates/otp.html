@@ -1,91 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OTP Verification - Dolsy Music</title>
-<style>
-body {
-  font-family: "Poppins", sans-serif;
-  background: #000;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-}
-.form-wrapper {
-  background: rgba(255,255,255,0.05);
-  padding: 40px;
-  border-radius: 12px;
-  width: 350px;
-  text-align: center;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-}
-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 16px;
-  border: none;
-  border-radius: 6px;
-  outline: none;
-  font-size: 14px;
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-}
-input::placeholder { color: #aaa; }
-button {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  background: #fff;
-  color: #000;
-  font-weight: 600;
-  cursor: pointer;
-}
-button:hover {
-  background: #000;
-  color: #fff;
-  border: 2px solid #fff;
-}
-.back-link { margin-top: 15px; font-size: 14px; }
-.back-link a { color: #fff; text-decoration: none; }
-.back-link a:hover { text-decoration: underline; }
-</style>
-</head>
-<body>
-<div class="form-wrapper">
-<h2>OTP Verification</h2>
-<form id="otpForm">
-<input type="text" id="otp" placeholder="Enter OTP" required>
-<button type="submit">Verify OTP</button>
-</form>
-<div class="back-link"><a href="/">Back</a></div>
-</div>
-
-<script>
-const params=new URLSearchParams(window.location.search);
-const email=params.get('email');
-const type=params.get('type'); // register or forgot
-
-document.getElementById('otpForm').addEventListener('submit', async e=>{
-  e.preventDefault();
-  const otp=document.getElementById('otp').value;
-  const url= type==='register' ? '/verify-registration-otp' : '/verify-otp';
-  const res=await fetch(url,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({email,otp})
-  });
-  const data=await res.json();
-  if(data.success){
-    if(type==='register'){ window.location.href='/account-created'; }
-    else{ window.location.href=`/resetpassword?email=${encodeURIComponent(email)}`; }
-  } else{ alert(data.message || 'Invalid OTP'); }
-});
-</script>
+<head><meta charset="UTF-8"><title>Verify OTP</title></head>
+<body style="background:#000; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh;">
+  <form action="/verify-otp" method="POST" style="background:#111; padding:20px; border-radius:8px;">
+    <h2>Enter OTP</h2>
+    <input type="hidden" name="email" value="{{ email }}">
+    <input type="text" name="otp" placeholder="Enter OTP" required>
+    <button type="submit">Verify</button>
+  </form>
+  <script>document.querySelector("input[name='otp']").focus();</script>
 </body>
 </html>
