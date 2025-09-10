@@ -1,140 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dolsy Music - Register</title>
-  <style>
-    /* General body styling */
-body {
-  font-family: "Poppins", sans-serif;
-  background: #0d0d0d;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-
-/* Registration box */
-.create-box {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 40px;
-  border-radius: 12px;
-  width: 350px;
-  text-align: center;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-}
-
-/* Heading */
-.create-box h2 {
-  margin-bottom: 20px;
-  font-size: 24px;
-  font-weight: 600;
-}
-
-/* Input fields */
-.create-box input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 16px;
-  border: none;
-  border-radius: 6px;
-  outline: none;
-  font-size: 14px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
-/* Placeholder color */
-.create-box input::placeholder {
-  color: #bbb;
-}
-
-/* Submit button */
-.create-box button {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  background: #1db954; /* Spotify green */
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: all 0.3s ease;
-}
-
-/* Hover effect for button */
-.create-box button:hover {
-  background: #fff;
-  color: #1db954;
-  border: 2px solid #1db954;
-}
-
-/* Links under form */
-.create-box .links {
-  margin-top: 15px;
-  font-size: 14px;
-}
-
-.create-box .links a {
-  color: #1db954;
-  text-decoration: none;
-  margin: 0 5px;
-}
-
-.create-box .links a:hover {
-  text-decoration: underline;
-}
-
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register - Dolsy Music</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <div class="create-box">
-    <h2>Create Account</h2>
-    <form id="createForm">
-      <input type="text" id="newUsername" placeholder="Enter Username" required>
-      <input type="email" id="email" placeholder="Enter Email" required>
-      <input type="password" id="newPassword" placeholder="Enter Password" required>
-      <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-      <button type="submit">Create Account</button>
-    </form>
-    <div class="links">
-      <a href="/">Back to Login</a>
-    </div>
-  </div>
+<div class="form-box">
+<h2>Create Account</h2>
+<form id="registerForm">
+<input type="text" id="username" placeholder="Username" required>
+<input type="email" id="email" placeholder="Email" required>
+<input type="password" id="password" placeholder="Password" required>
+<input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+<button type="submit" id="registerBtn">Create Account</button>
+</form>
+<div class="links">
+<a href="/">Back to Login</a>
+</div>
+</div>
 
-  <script>
-    document.getElementById("createForm").addEventListener("submit", function(event){
-      event.preventDefault();
-      const username = document.getElementById("newUsername").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("newPassword").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
-
-      if(password !== confirmPassword){
-        alert("❌ Passwords do not match!");
-        return;
-      }
-
-      fetch('/register', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({username, email, password})
-      })
-      .then(res => res.json())
-      .then(data => {
-        if(data.success){
-          alert("✅ Account Created Successfully!");
-          window.location.href = "/"; // redirect to login
-        } else {
-          alert(`❌ ${data.message}`);
-        }
-      });
-    });
-  </script>
+<script>
+const registerForm=document.getElementById('registerForm');
+const registerBtn=document.getElementById('registerBtn');
+registerForm.addEventListener('submit', async e=>{
+  e.preventDefault();
+  registerBtn.disabled=true;
+  const username=document.getElementById('username').value.trim();
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  const confirm=document.getElementById('confirmPassword').value;
+  if(password!==confirm){ alert("Passwords do not match!"); registerBtn.disabled=false; return; }
+  const res=await fetch('/register-temp',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username,email,password})
+  });
+  const data=await res.json();
+  if(data.success){ window.location.href=`/otp?email=${encodeURIComponent(email)}&type=register`; }
+  else{ alert(data.message); registerBtn.disabled=false; }
+});
+</script>
 </body>
 </html>
