@@ -1,32 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dolsy Music - Home</title>
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: #000;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      flex-direction: column;
-    }
-    h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-    p {
-      color: #bbb;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home - Dolsy Music</title>
+<style>
+body{font-family:"Poppins",sans-serif;background:#000;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;}
+.home-box{background:#111;padding:30px;border-radius:8px;width:400px;text-align:center;}
+h2{margin-bottom:20px;}
+</style>
 </head>
 <body>
-  <h1>Hello, {{ username }} 👋</h1>
-  <p>Welcome to Dolsy Music 🎶</p>
+<div class="home-box">
+<h2>Welcome, {{ username }}!</h2>
+<p>You have successfully logged in to Dolsy Music.</p>
+<a href="/" style="color:#fff;text-decoration:underline;">Logout</a>
+</div>
 </body>
 </html>
