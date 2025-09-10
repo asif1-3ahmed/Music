@@ -1,74 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>Verify OTP</title>
-<style>body {
-  font-family: "Poppins", sans-serif;
-  background: radial-gradient(circle at center, #0f0f0f, #000);
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-
-.otp-box {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 35px;
-  border-radius: 14px;
-  width: 320px;
-  text-align: center;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
-}
-
-h2 {
-  font-size: 22px;
-  margin-bottom: 15px;
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  outline: none;
-  font-size: 16px;
-  letter-spacing: 3px;
-  text-align: center;
-}
-
-button {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #ff416c, #ff4b2b);
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 12px;
-  transition: 0.3s ease;
-}
-
-button:hover {
-  background: linear-gradient(135deg, #ff4b2b, #ff416c);
-  transform: scale(1.03);
-  box-shadow: 0 0 15px #ff416c;
-}
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify OTP - Dolsy Music</title>
+<style>
+body{font-family:"Poppins",sans-serif;background:#000;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;}
+.otp-box{background:#111;padding:30px;border-radius:8px;width:350px;text-align:center;}
+h2{margin-bottom:20px;}
+input{width:95%;padding:10px;margin:10px 0;border:none;border-radius:6px;background:#000;color:#fff;text-align:center;letter-spacing:3px;}
+button{width:100%;padding:10px;border:none;border-radius:6px;background:#fff;color:#000;cursor:pointer;font-weight:600;}
+button:hover{background:#000;color:#fff;border:1px solid #fff;}
 </style>
 </head>
-<body style="background:#000; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh;">
-  <form action="/verify-otp" method="POST" style="background:#111; padding:20px; border-radius:8px;">
-    <h2>Enter OTP</h2>
-    <input type="hidden" name="email" value="{{ email }}">
-    <input type="text" name="otp" placeholder="Enter OTP" required>
-    <button type="submit">Verify</button>
-  </form>
-  <script>document.querySelector("input[name='otp']").focus();</script>
+<body>
+<div class="otp-box">
+<h2>Enter OTP</h2>
+<form action="/verify-otp" method="POST">
+<input type="hidden" name="email" value="{{ email }}">
+<input type="hidden" name="source" value="{{ 'register' if 'register' in request.referrer else 'forgot' }}">
+<input type="text" name="otp" placeholder="Enter OTP" required>
+<button type="submit">Verify OTP</button>
+</form>
+</div>
 </body>
 </html>
