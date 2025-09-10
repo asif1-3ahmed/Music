@@ -7,17 +7,23 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-# Temporary storage
-otp_storage = {}       # { email: otp }
-pending_users = {}     # { email: { username, password } }
+# -----------------------
+# Temporary storages
+# -----------------------
+otp_storage = {}          # { email: otp }
+pending_users = {}        # { email: { username, password } }
 
+# -----------------------
 # Gmail SMTP settings
+# -----------------------
 EMAIL_ADDRESS = "10c1amdasifahmed@gmail.com"
 EMAIL_PASSWORD = "qjta cfve mecf ylot"
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
+# -----------------------
 # MongoDB setup
+# -----------------------
 MONGO_URI = "mongodb+srv://root_db_user:Qwer1234%40123@cluster0.4s40bte.mongodb.net/?retryWrites=true&w=majority"
 client = MongoClient(MONGO_URI)
 db = client['musicdb']
@@ -66,16 +72,12 @@ def otp_page():
 def resetpassword_page():
     return render_template('resetpassword.html')
 
-@app.route('/account-created')
-def account_created_page():
-    return render_template('account_created.html')
-
 # -----------------------
 # API ROUTES
 # -----------------------
 
 # 1️⃣ Register temporarily and send OTP
-@app.route('/register-temp', methods=['POST'])
+@app.route('/register', methods=['POST'])
 def register_temp():
     data = request.get_json()
     username = data.get('username').strip()
@@ -102,9 +104,9 @@ def register_temp():
 
     return jsonify({'success': True, 'email': email})
 
-# 2️⃣ Verify registration OTP and insert user
-@app.route('/verify-registration-otp', methods=['POST'])
-def verify_registration_otp():
+# 2️⃣ Verify OTP and insert user
+@app.route('/verify-otp', methods=['POST'])
+def verify_otp():
     data = request.get_json()
     email = data.get('email')
     otp_input = data.get('otp')
@@ -121,7 +123,8 @@ def verify_registration_otp():
             })
             del otp_storage[email]
             del pending_users[email]
-            return jsonify({'success': True})
+            # redirect flag
+            return jsonify({'success': True, 'redirect': '/register-page?verified=true'})
     return jsonify({'success': False, 'message': 'Invalid OTP'})
 
 # 3️⃣ Login
@@ -153,18 +156,7 @@ def send_otp():
     send_email(email, otp)
     return jsonify({'success': True, 'email': email})
 
-# 5️⃣ Verify OTP for forgot password
-@app.route('/verify-otp', methods=['POST'])
-def verify_otp():
-    data = request.get_json()
-    email = data.get('email')
-    otp_input = data.get('otp')
-    if email in otp_storage and otp_storage[email] == otp_input:
-        del otp_storage[email]
-        return jsonify({'success': True})
-    return jsonify({'success': False, 'message': 'Invalid OTP'})
-
-# 6️⃣ Reset password
+# 5️⃣ Reset password
 @app.route('/reset-password', methods=['POST'])
 def reset_password():
     data = request.get_json()
