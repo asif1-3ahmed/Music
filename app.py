@@ -1,177 +1,101 @@
-from flask import Flask, request, jsonify, render_template
-import random
-import smtplib
-from email.mime.text import MIMEText
+from flask import Flask, render_template, request, redirect, url_for, session
 from pymongo import MongoClient
-from werkzeug.security import generate_password_hash, check_password_hash
+import random, smtplib
+from email.mime.text import MIMEText
 
 app = Flask(__name__)
+app.secret_key = "supersecret"
 
-# -----------------------
-# Temporary storages
-# -----------------------
-otp_storage = {}          # { email: otp }
-pending_users = {}        # { email: { username, password } }
+# MongoDB connection
+client = MongoClient("mongodb://localhost:27017/")
+db = client["dolsy_music"]
+users = db["users"]
 
-# -----------------------
-# Gmail SMTP settings
-# -----------------------
-EMAIL_ADDRESS = "10c1amdasifahmed@gmail.com"
-EMAIL_PASSWORD = "qjta cfve mecf ylot"
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
+# Store OTPs temporarily
+otp_storage = {}
 
-# -----------------------
-# MongoDB setup
-# -----------------------
-MONGO_URI = "mongodb+srv://root_db_user:Qwer1234%40123@cluster0.4s40bte.mongodb.net/?retryWrites=true&w=majority"
-client = MongoClient(MONGO_URI)
-db = client['musicdb']
-users_collection = db['spotifytracks']
+# Gmail SMTP
+EMAIL_ADDRESS = "yourmail@gmail.com"      # replace
+EMAIL_PASSWORD = "your-app-password"      # replace
 
-# -----------------------
-# EMAIL FUNCTION
-# -----------------------
-def send_email(recipient, otp):
-    msg = MIMEText(f"Your Dolsy Music OTP is: {otp}")
-    msg['Subject'] = "Dolsy Music OTP Verification"
-    msg['From'] = EMAIL_ADDRESS
-    msg['To'] = recipient
-    try:
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-        server.starttls()
+def send_otp(email, otp):
+    msg = MIMEText(f"Your OTP for Dolsy Music is: {otp}")
+    msg["Subject"] = "Dolsy Music - OTP Verification"
+    msg["From"] = EMAIL_ADDRESS
+    msg["To"] = email
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-        server.send_message(msg)
-        server.quit()
-        print(f"OTP sent to {recipient}: {otp}")
-        return True
-    except Exception as e:
-        print("Error sending email:", e)
-        return False
+        server.sendmail(EMAIL_ADDRESS, email, msg.as_string())
 
-# -----------------------
-# ROUTES
-# -----------------------
-@app.route('/')
-def home():
-    return render_template('login.html')
+@app.route("/")
+def index():
+    return redirect(url_for("register"))
 
-@app.route('/register-page')
-def register_page():
-    return render_template('register.html')
+# ---------------- Register ----------------
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        email = request.form["email"]
+        password = request.form["password"]
 
-@app.route('/forgotpassword')
-def forgotpassword_page():
-    return render_template('forgotpassword.html')
+        # check if email exists
+        if users.find_one({"email": email}):
+            return "❌ Email already registered!"
 
-@app.route('/otp')
-def otp_page():
-    return render_template('otp.html')
+        otp = str(random.randint(100000, 999999))
+        otp_storage[email] = {"otp": otp, "username": username, "password": password}
+        send_otp(email, otp)
+        session["pending_email"] = email
+        return redirect(url_for("otp"))
+    return render_template("register.html")
 
-@app.route('/resetpassword')
-def resetpassword_page():
-    return render_template('resetpassword.html')
+# ---------------- OTP ----------------
+@app.route("/otp", methods=["GET", "POST"])
+def otp():
+    email = session.get("pending_email")
+    if not email:
+        return redirect(url_for("register"))
 
-# -----------------------
-# API ROUTES
-# -----------------------
-
-# 1️⃣ Register temporarily and send OTP
-@app.route('/register', methods=['POST'])
-def register_temp():
-    data = request.get_json()
-    username = data.get('username').strip()
-    email = data.get('email').strip()
-    password = data.get('password')
-
-    if not username or not email or not password:
-        return jsonify({'success': False, 'message': 'All fields are required.'})
-
-    # Check uniqueness in DB
-    if users_collection.find_one({'$or':[{'email': email}, {'username': username}]}):
-        return jsonify({'success': False, 'message': 'Username or email already exists.'})
-
-    # Store in pending_users
-    pending_users[email] = {
-        'username': username,
-        'password': password
-    }
-
-    # Generate OTP and send
-    otp = str(random.randint(100000, 999999))
-    otp_storage[email] = otp
-    send_email(email, otp)
-
-    return jsonify({'success': True, 'email': email})
-
-# 2️⃣ Verify OTP and insert user
-@app.route('/verify-otp', methods=['POST'])
-def verify_otp():
-    data = request.get_json()
-    email = data.get('email')
-    otp_input = data.get('otp')
-
-    if email in otp_storage and otp_storage[email] == otp_input:
-        user_data = pending_users.get(email)
-        if user_data:
-            hashed_password = generate_password_hash(user_data['password'])
-            users_collection.insert_one({
-                'username': user_data['username'],
-                'email': email,
-                'password': hashed_password,
-                'verified': True
+    if request.method == "POST":
+        entered_otp = request.form["otp"]
+        if otp_storage.get(email) and otp_storage[email]["otp"] == entered_otp:
+            data = otp_storage[email]
+            users.insert_one({
+                "username": data["username"],
+                "email": email,
+                "password": data["password"]
             })
             del otp_storage[email]
-            del pending_users[email]
-            # redirect flag
-            return jsonify({'success': True, 'redirect': '/register-page?verified=true'})
-    return jsonify({'success': False, 'message': 'Invalid OTP'})
+            session.pop("pending_email", None)
+            return redirect(url_for("account_created"))
+        else:
+            return "❌ Invalid OTP!"
+    return render_template("otp.html")
 
-# 3️⃣ Login
-@app.route('/login', methods=['POST'])
-def login_user():
-    data = request.get_json()
-    username = data.get('username').strip()
-    password = data.get('password').strip()
+# ---------------- Account Created ----------------
+@app.route("/account_created")
+def account_created():
+    return render_template("account_created.html")
 
-    user = users_collection.find_one({'username': username})
-    if not user:
-        return jsonify({'success': False, 'message': 'User not found.'})
-    if not user['verified']:
-        return jsonify({'success': False, 'message': 'Please verify your email first.'})
-    if check_password_hash(user['password'], password):
-        return jsonify({'success': True})
-    return jsonify({'success': False, 'message': 'Incorrect password.'})
+# ---------------- Home ----------------
+@app.route("/home")
+def home():
+    return render_template("home.html", username="Hello")
 
-# 4️⃣ Send OTP for forgot password
-@app.route('/send-otp', methods=['POST'])
-def send_otp():
-    data = request.get_json()
-    email = data.get('email').strip()
-    user = users_collection.find_one({'email': email})
-    if not user:
-        return jsonify({'success': False, 'message': 'Email not found.'})
-    otp = str(random.randint(100000, 999999))
-    otp_storage[email] = otp
-    send_email(email, otp)
-    return jsonify({'success': True, 'email': email})
+# ---------------- Login ----------------
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.form["email"]
+        password = request.form["password"]
 
-# 5️⃣ Reset password
-@app.route('/reset-password', methods=['POST'])
-def reset_password():
-    data = request.get_json()
-    email = data.get('email')
-    new_password = data.get('password')
+        user = users.find_one({"email": email, "password": password})
+        if user:
+            return redirect(url_for("home"))
+        return "❌ Invalid credentials!"
+    return render_template("login.html")
 
-    if not email or not new_password:
-        return jsonify({'success': False, 'message': 'Email and new password required.'})
-
-    hashed_password = generate_password_hash(new_password)
-    users_collection.update_one({'email': email}, {'$set': {'password': hashed_password}})
-    return jsonify({'success': True})
-
-# -----------------------
-# RUN APP
-# -----------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
