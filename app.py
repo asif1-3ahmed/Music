@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, redirect, url_for, render_template, session, make_response
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 import random
@@ -6,6 +6,7 @@ import smtplib
 from email.mime.text import MIMEText
 
 app = Flask(__name__)
+app.secret_key = "super-secret-key"  # Required for session handling
 
 # ----------------------- MongoDB Setup -----------------------
 MONGO_URI = "mongodb+srv://root_db_user:MdbSecurity%40secure%40123%4012@cluster0.4s40bte.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
@@ -69,17 +70,35 @@ def resetpassword_page():
 
 @app.route('/home')
 def home_page():
-    username = request.args.get('username', 'User')
-    return render_template('home.html', username=username)
+    if 'username' not in session:
+        return redirect(url_for('login_page'))
+
+    username = session['username']
+    response = make_response(render_template('home.html', username=username))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 @app.route('/main')
 def main_page():
-    username = request.args.get('username', 'User')
-    return render_template('main.html', username=username)
+    if 'username' not in session:
+        return redirect(url_for('login_page'))
+
+    username = session['username']
+    response = make_response(render_template('main.html', username=username))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login_page'))
 
 # ----------------------- API -----------------------
 
-# Registration
 @app.route('/register', methods=['POST'])
 def register_temp():
     username = request.form.get('username').strip()
@@ -100,7 +119,6 @@ def register_temp():
 
     return redirect(url_for('otp_page', email=email, source='register'))
 
-# Verify OTP
 @app.route('/verify-otp', methods=['POST'])
 def verify_otp():
     email = request.form.get('email')
@@ -120,14 +138,12 @@ def verify_otp():
                 })
                 del otp_storage[email]
                 del pending_users[email]
-                # redirect to register page with success animation
                 return redirect(url_for('register_page', verified='true', username=user_data['username']))
         elif source == "forgot":
             del otp_storage[email]
             return redirect(url_for('resetpassword_page', email=email))
     return "<script>alert('Invalid OTP'); window.history.back();</script>"
 
-# Login
 @app.route('/login', methods=['POST'])
 def login_user():
     username = request.form.get('username').strip()
@@ -139,10 +155,11 @@ def login_user():
     if not user.get('verified', False):
         return "<script>alert('Please verify your email first'); window.history.back();</script>"
     if check_password_hash(user['password'], password):
-        return redirect(url_for('home_page', username=username))
+        session['username'] = username
+        return redirect(url_for('main_page'))
+
     return "<script>alert('Incorrect password'); window.history.back();</script>"
 
-# Forgot Password
 @app.route('/send-otp', methods=['POST'])
 def send_otp_forgot():
     email = request.form.get('email').strip()
@@ -156,7 +173,6 @@ def send_otp_forgot():
 
     return redirect(url_for('otp_page', email=email, source='forgot'))
 
-# Reset Password
 @app.route('/reset-password', methods=['POST'])
 def reset_password():
     email = request.form.get('email')
