@@ -83,7 +83,7 @@ def home_page():
 @app.route('/main')
 def main_page():
     if 'username' not in session:
-        return redirect(url_for('login_page'))
+        return redirect(url_for('logout'))  # fallback if session is lost
 
     username = session['username']
     response = make_response(render_template('main.html', username=username))
@@ -92,10 +92,16 @@ def main_page():
     response.headers['Expires'] = '0'
     return response
 
+
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('login_page'))
+    response = make_response(render_template('login.html'))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
 
 # ----------------------- API -----------------------
 
