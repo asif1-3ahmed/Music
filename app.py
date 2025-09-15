@@ -72,6 +72,11 @@ def home_page():
     username = request.args.get('username', 'User')
     return render_template('home.html', username=username)
 
+@app.route('/main')
+def main_page():
+    username = request.args.get('username', 'User')
+    return render_template('main.html', username=username)
+
 # ----------------------- API -----------------------
 
 # Registration
