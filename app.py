@@ -8,7 +8,7 @@ from email.mime.text import MIMEText
 app = Flask(__name__)
 
 # ----------------------- MongoDB Setup -----------------------
-MONGO_URI = "mongodb+srv://root_db_user:Qwer1234%40123@cluster0.4s40bte.mongodb.net/?retryWrites=true&w=majority"
+MONGO_URI = "mongodb+srv://root_db_user:QWEr1234%40123@cluster0.4s40bte.mongodb.net/?retryWrites=true&w=majority"
 client = MongoClient(MONGO_URI)
 db = client['musicdb']
 users_collection = db['users']
