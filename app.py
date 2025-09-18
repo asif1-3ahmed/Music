@@ -43,7 +43,18 @@ def send_email(recipient, otp):
 
 # ----------------------- ROUTES -----------------------
 
+# First page (video splash screen)
 @app.route('/')
+def first_page():
+    return render_template('firstpage.html')
+
+# Animation page (floating music notes)
+@app.route('/animation')
+def animation_page():
+    return render_template('html.html')
+
+# Login page
+@app.route('/login-page')
 def login_page():
     return render_template('login.html')
 
@@ -92,7 +103,6 @@ def main_page():
     response.headers['Expires'] = '0'
     return response
 
-
 @app.route('/logout')
 def logout():
     session.clear()
@@ -101,7 +111,6 @@ def logout():
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
     return response
-
 
 # ----------------------- API -----------------------
 
