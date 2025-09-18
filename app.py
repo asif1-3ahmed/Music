@@ -46,44 +46,48 @@ def send_email(recipient, otp):
 # First page (video splash screen)
 @app.route('/')
 def first_page():
-    return render_template('firstpage.html')
+    return render_template('firstpage.html')  # Video page
 
 # Animation page (floating music notes)
 @app.route('/animation')
 def animation_page():
-    return render_template('html.html')
+    return render_template('html.html')       # Animation page
 
 # Login page
 @app.route('/login-page')
 def login_page():
-    return render_template('login.html')
+    return render_template('login.html')      # Login page
 
+# Register page
 @app.route('/register-page')
 def register_page():
     verified = request.args.get('verified', '')
     username = request.args.get('username', '')
     return render_template('register.html', verified=verified, created_username=username)
 
+# Forgot password
 @app.route('/forgotpassword')
 def forgotpassword_page():
     return render_template('forgotpassword.html')
 
+# OTP page
 @app.route('/otp')
 def otp_page():
     email = request.args.get('email')
     source = request.args.get('source')
     return render_template('otp.html', email=email, source=source)
 
+# Reset password page
 @app.route('/resetpassword')
 def resetpassword_page():
     email = request.args.get('email')
     return render_template('resetpassword.html', email=email)
 
+# Home page (protected)
 @app.route('/home')
 def home_page():
     if 'username' not in session:
         return redirect(url_for('login_page'))
-
     username = session['username']
     response = make_response(render_template('home.html', username=username))
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
@@ -91,11 +95,11 @@ def home_page():
     response.headers['Expires'] = '0'
     return response
 
+# Main page (protected)
 @app.route('/main')
 def main_page():
     if 'username' not in session:
         return redirect(url_for('logout'))  # fallback if session is lost
-
     username = session['username']
     response = make_response(render_template('main.html', username=username))
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
@@ -103,6 +107,7 @@ def main_page():
     response.headers['Expires'] = '0'
     return response
 
+# Logout
 @app.route('/logout')
 def logout():
     session.clear()
@@ -114,6 +119,7 @@ def logout():
 
 # ----------------------- API -----------------------
 
+# Registration
 @app.route('/register', methods=['POST'])
 def register_temp():
     username = request.form.get('username').strip()
@@ -134,6 +140,7 @@ def register_temp():
 
     return redirect(url_for('otp_page', email=email, source='register'))
 
+# OTP verification
 @app.route('/verify-otp', methods=['POST'])
 def verify_otp():
     email = request.form.get('email')
@@ -159,6 +166,7 @@ def verify_otp():
             return redirect(url_for('resetpassword_page', email=email))
     return "<script>alert('Invalid OTP'); window.history.back();</script>"
 
+# Login
 @app.route('/login', methods=['POST'])
 def login_user():
     username = request.form.get('username').strip()
@@ -175,6 +183,7 @@ def login_user():
 
     return "<script>alert('Incorrect password'); window.history.back();</script>"
 
+# Send OTP for forgot password
 @app.route('/send-otp', methods=['POST'])
 def send_otp_forgot():
     email = request.form.get('email').strip()
@@ -188,6 +197,7 @@ def send_otp_forgot():
 
     return redirect(url_for('otp_page', email=email, source='forgot'))
 
+# Reset password
 @app.route('/reset-password', methods=['POST'])
 def reset_password():
     email = request.form.get('email')
