@@ -19,8 +19,8 @@ otp_storage = {}       # { email: otp }
 pending_users = {}     # { email: { username, password } }
 
 # ----------------------- Email Settings -----------------------
-EMAIL_ADDRESS = "10c1amdasifahmed@gmail.com"
-EMAIL_PASSWORD = "qjta cfve mecf ylot"
+EMAIL_ADDRESS = "dolsymusicpresents@gmail.com"
+EMAIL_PASSWORD = "lkry bmst awue eqpe"
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
