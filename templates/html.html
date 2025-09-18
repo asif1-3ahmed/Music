@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dolsy Music - Animation</title>
-  <!-- Redirect to login.html after 6 seconds -->
-  <meta http-equiv="refresh" content="6;url=login.html">
+  <!-- Redirect to login page after 6 seconds -->
+  <meta http-equiv="refresh" content="6;url=/login-page">
 
   <style>
     body {
@@ -22,18 +22,14 @@
       overflow: hidden;
       text-align: center;
     }
-
     h1 {
       font-size: 2.5em;
       margin-bottom: 10px;
     }
-
     p {
       font-size: 1.2em;
       margin: 5px 0;
     }
-
-    /* Floating music notes */
     .music-note {
       position: absolute;
       bottom: -50px;
@@ -44,16 +40,9 @@
       font-weight: bold;
       pointer-events: none;
     }
-
     @keyframes floatUp {
-      0% {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-110vh) scale(1.5);
-        opacity: 0;
-      }
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-110vh) scale(1.5); opacity: 0; }
     }
   </style>
 </head>
@@ -64,25 +53,18 @@
     <p>Your music journey begins here.</p>
   </div>
 
-  <!-- Music notes floating effect -->
   <script>
     const symbols = ["𝄞", "♪", "♫", "♬", "𝄞", "♬", "𝄞", "♪"];
-
     function createNote() {
       const note = document.createElement("div");
       note.classList.add("music-note");
       note.innerText = symbols[Math.floor(Math.random() * symbols.length)];
       note.style.left = Math.random() * 100 + "vw";
-      note.style.fontSize = Math.random() * 30 + 30 + "px"; // 30px - 60px
+      note.style.fontSize = Math.random() * 30 + 30 + "px";
       document.body.appendChild(note);
-
-      setTimeout(() => note.remove(), 6000); // cleanup
+      setTimeout(() => note.remove(), 6000);
     }
-
-    // spawn notes every 300ms
     const interval = setInterval(createNote, 300);
-
-    // stop spawning after 6s (redirect time)
     setTimeout(() => clearInterval(interval), 6000);
   </script>
 </body>
