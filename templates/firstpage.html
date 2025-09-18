@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="refresh" content="4;url=HTML.html">
+
+    <title>Your App Interface</title>
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body and html settings */
+        html, body {
+            height: 100%;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Fullscreen container for the video */
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Styling the background video */
+        .background-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            object-fit: cover; /* Ensures the video covers the full screen */
+            transform: translate(-50%, -50%); /* Centers the video */
+        }
+
+        /* Example of a container for other content */
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-align: center;
+            z-index: 1;
+        }
+
+        /* Responsive text sizes */
+        h1 {
+            font-size: 3em;
+        }
+
+        /* For smaller screens, scale the text down */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body style="background-color:black">
+
+
+    <div class="video-container">
+        <video class="background-video" autoplay muted loop>
+            <source src="DolsyInterface.mp4" type="video/mp4">
+        </video>
+        
+        </div>
+    </div>
+</body>
+</html>
