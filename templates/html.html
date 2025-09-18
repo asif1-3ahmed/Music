@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dolsy Music - Home</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      color: white;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Center content */
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    .dolsy-title {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    .intro-text p {
+      margin: 10px 0;
+      font-size: 1.2em;
+    }
+
+    .app-footer {
+      position: absolute;
+      bottom: 10px;
+      font-size: 0.9em;
+    }
+
+    /* Floating music notes */
+    .music-note {
+      position: fixed;
+      bottom: -50px;
+      color: white;
+      font-size: 32px;
+      animation: floatUp 6s linear forwards;
+      opacity: 1;
+      font-weight: bold;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-110vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1 class="dolsy-title">DOLSY&#119231 MUSIC PRESENTS</h1>
+    </header>
+
+    <section class="main-content">
+      <div class="intro-text">
+        <p>Welcome to Dolsy Music</p>
+        <p>Your music journey begins here.</p>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 Dolsy Music. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <!-- Music notes floating effect -->
+  <script>
+    const symbols = ["𝄞", "♪", "♫", "♬"];
+
+    function createNote() {
+      const note = document.createElement("div");
+      note.classList.add("music-note");
+      note.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+      note.style.left = Math.random() * 100 + "vw";
+      note.style.fontSize = Math.random() * 30 + 30 + "px";
+      document.body.appendChild(note);
+
+      setTimeout(() => note.remove(), 6000);
+    }
+
+    const interval = setInterval(createNote, 300);
+
+    // Stop after 6 seconds and redirect to login.html
+    setTimeout(() => {
+      clearInterval(interval);
+      window.location.href = "login.html"; 
+    }, 6000);
+  </script>
+</body>
+</html>
