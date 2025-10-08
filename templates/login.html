@@ -1,65 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - Dolsy Music</title>
-<style>
-body {
-    font-family:"Poppins",sans-serif;
-    background:#000;
-    color:#fff;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    margin:0;
-}
-.login-box{
-    background:#111;
-    padding:30px;
-    border-radius:8px;
-    width:350px;
-    text-align:center;
-}
-h2{margin-bottom:20px;}
-input{
-    width:95%;
-    padding:10px;
-    margin:10px 0;
-    border:none;
-    border-radius:6px;
-    background:#000;
-    color:#fff;
-}
-button{
-    width:100%;
-    padding:10px;
-    border:none;
-    border-radius:6px;
-    background:#fff;
-    color:#000;
-    cursor:pointer;
-    font-weight:600;
-}
-button:hover{background:#000;color:#fff;border:1px solid #fff;}
-.links{margin-top:12px;font-size:14px;}
-.links a{color:#fff;text-decoration:none;}
-.links a:hover{text-decoration:underline;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Dolsy Music</title>
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-box {
+            background: #111;
+            padding: 30px;
+            border-radius: 8px;
+            width: 350px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 95%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 6px;
+            background: #000;
+            color: #fff;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            background: #fff;
+            color: #000;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: #000;
+            color: #fff;
+            border: 1px solid #fff;
+        }
+
+        .links {
+            margin-top: 12px;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #000;
+            color: #fff;
+            font-size: 18px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        .links a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
+
 <body>
-<div class="login-box">
-<h2>Login</h2>
-<form action="/login" method="POST">
-<input type="text" name="username" placeholder="Username" required>
-<input type="password" name="password" placeholder="Password" required>
-<button type="submit">Login</button>
-</form>
-<div class="links">
-<a href="/forgotpassword">Forgot Password?</a> | 
-<a href="/register-page">Create Account</a>
-</div>
-</div>
+    <div class="login-box">
+        <h2>Login</h2>
+        <form action="/login" method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+
+        <div class="links">
+            <div class="social-icons">
+                <!-- Google Login Image -->
+                <a href="#" aria-label="Google Login">
+                    <img src="{{ url_for('static', filename='go.jpeg') }}" alt="Google"
+                        style="width: 20px; height: 20px;">
+                </a>
+
+                <!-- Facebook Login Image -->
+                <a href="#" aria-label="Facebook Login">
+                    <img src="{{ url_for('static', filename='f.jpg') }}" alt="Facebook"
+                        style="width: 20px; height: 20px;">
+                </a>
+
+
+            </div>
+            <a href="forgotpassword.html">Forgot Password?</a> |
+            <a href="register.html">Create Account</a>
+        </div>
+    </div>
 </body>
+
 </html>
