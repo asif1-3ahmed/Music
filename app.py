@@ -26,7 +26,7 @@ FROM_EMAIL = "Dolsy Music <onboarding@resend.dev>"
 
 def send_email(recipient, otp):
     if not RESEND_API_KEY:
-        print("RESEND_API_KEY not set")
+        print("❌ RESEND_API_KEY not set")
         return False
 
     try:
@@ -37,22 +37,21 @@ def send_email(recipient, otp):
                 "Content-Type": "application/json"
             },
             json={
-                "from": FROM_EMAIL,
+                "from": "Dolsy Music <onboarding@resend.dev>",
                 "to": recipient,
                 "subject": "Dolsy Music OTP",
-                "html": f"""
-                    <h2>Dolsy Music</h2>
-                    <p>Your OTP is:</p>
-                    <h1>{otp}</h1>
-                    <p>Do not share this OTP.</p>
-                """
+                "html": f"<h1>Your OTP is {otp}</h1>"
             },
             timeout=10
         )
+
+        print("📨 Resend status:", r.status_code)
+        print("📨 Resend response:", r.text)
+
         return r.status_code == 200
 
     except Exception as e:
-        print("Email error:", e)
+        print("❌ Resend exception:", e)
         return False
 
 # -------------------- PAGES --------------------
