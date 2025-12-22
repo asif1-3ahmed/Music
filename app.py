@@ -5,215 +5,214 @@ import random
 import smtplib
 from email.mime.text import MIMEText
 
+# ----------------------- APP SETUP -----------------------
 app = Flask(__name__)
-app.secret_key = "super-secret-key"  # Required for session handling
+app.secret_key = "super-secret-key"
 
-# ----------------------- MongoDB Setup -----------------------
+# ----------------------- MONGODB -----------------------
 MONGO_URI = "mongodb+srv://root_db_user:MdbSecurity%40secure%40123%4012@cluster0.4s40bte.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(MONGO_URI)
-db = client['musicdb']
-users_collection = db['users']
+db = client["musicdb"]
+users_collection = db["users"]
 
-# ----------------------- Temporary Storages -----------------------
-otp_storage = {}       # { email: otp }
-pending_users = {}     # { email: { username, password } }
+# ----------------------- TEMP STORAGE -----------------------
+otp_storage = {}
+pending_users = {}
 
-# ----------------------- Email Settings -----------------------
+# ----------------------- EMAIL CONFIG -----------------------
 EMAIL_ADDRESS = "dolsymusicpresents@gmail.com"
 EMAIL_PASSWORD = "lkry bmst awue eqpe"
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
 def send_email(recipient, otp):
-    msg = MIMEText(f"Your Dolsy Music OTP is: {otp}")
-    msg['Subject'] = "Dolsy Music OTP Verification"
-    msg['From'] = EMAIL_ADDRESS
-    msg['To'] = recipient
     try:
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        msg = MIMEText(f"Your Dolsy Music OTP is: {otp}")
+        msg["Subject"] = "Dolsy Music OTP Verification"
+        msg["From"] = EMAIL_ADDRESS
+        msg["To"] = recipient
+
+        # IMPORTANT: timeout prevents Gunicorn worker kill
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=10)
         server.starttls()
         server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
         server.send_message(msg)
         server.quit()
-        print(f"OTP sent to {recipient}: {otp}")
         return True
+
     except Exception as e:
-        print("Error sending email:", e)
+        print("Email error:", e)
         return False
 
-# ----------------------- ROUTES -----------------------
-
-# First page (video splash screen)
-@app.route('/')
+# ----------------------- PAGES -----------------------
+@app.route("/")
 def first_page():
-    return render_template('firstpage.html')  # Video page
+    return render_template("firstpage.html")
 
-# Animation page (floating music notes)
-@app.route('/animation')
+@app.route("/animation")
 def animation_page():
-    return render_template('html.html')       # Animation page
+    return render_template("html.html")
 
-# Login page
-@app.route('/login-page')
+@app.route("/login-page")
 def login_page():
-    return render_template('login.html')      # Login page
+    return render_template("login.html")
 
-# Register page
-@app.route('/register-page')
+@app.route("/register-page")
 def register_page():
-    verified = request.args.get('verified', '')
-    username = request.args.get('username', '')
-    return render_template('register.html', verified=verified, created_username=username)
+    verified = request.args.get("verified", "")
+    username = request.args.get("username", "")
+    return render_template("register.html", verified=verified, created_username=username)
 
-# Forgot password
-@app.route('/forgotpassword')
+@app.route("/forgotpassword")
 def forgotpassword_page():
-    return render_template('forgotpassword.html')
+    return render_template("forgotpassword.html")
 
-# OTP page
-@app.route('/otp')
+@app.route("/otp")
 def otp_page():
-    email = request.args.get('email')
-    source = request.args.get('source')
-    return render_template('otp.html', email=email, source=source)
+    return render_template(
+        "otp.html",
+        email=request.args.get("email"),
+        source=request.args.get("source")
+    )
 
-# Reset password page
-@app.route('/resetpassword')
+@app.route("/resetpassword")
 def resetpassword_page():
-    email = request.args.get('email')
-    return render_template('resetpassword.html', email=email)
+    return render_template(
+        "resetpassword.html",
+        email=request.args.get("email")
+    )
 
-# Home page (protected)
-@app.route('/home')
+@app.route("/home")
 def home_page():
-    if 'username' not in session:
-        return redirect(url_for('login_page'))
-    username = session['username']
-    response = make_response(render_template('home.html', username=username))
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
+    if "username" not in session:
+        return redirect(url_for("login_page"))
+
+    response = make_response(render_template("home.html", username=session["username"]))
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     return response
 
-# Main page (protected)
-@app.route('/main')
+@app.route("/main")
 def main_page():
-    if 'username' not in session:
-        return redirect(url_for('logout'))  # fallback if session is lost
-    username = session['username']
-    response = make_response(render_template('main.html', username=username))
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
+    if "username" not in session:
+        return redirect(url_for("logout"))
+
+    response = make_response(render_template("main.html", username=session["username"]))
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     return response
 
-# Logout
-@app.route('/logout')
+@app.route("/logout")
 def logout():
     session.clear()
-    response = make_response(render_template('login.html'))
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
+    response = make_response(render_template("login.html"))
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     return response
 
-# ----------------------- API -----------------------
-
-# Registration
-@app.route('/register', methods=['POST'])
-def register_temp():
-    username = request.form.get('username').strip()
-    email = request.form.get('email').strip()
-    password = request.form.get('password')
+# ----------------------- AUTH API -----------------------
+@app.route("/register", methods=["POST"])
+def register():
+    username = request.form.get("username", "").strip()
+    email = request.form.get("email", "").strip()
+    password = request.form.get("password", "")
 
     if not username or not email or not password:
-        return "<script>alert('All fields are required'); window.history.back();</script>"
+        return "<script>alert('All fields are required');history.back();</script>"
 
-    if users_collection.find_one({'$or':[{'username': username}, {'email': email}]}):
-        return "<script>alert('Username or email already exists'); window.history.back();</script>"
+    if users_collection.find_one({"$or": [{"username": username}, {"email": email}]}):
+        return "<script>alert('Username or email already exists');history.back();</script>"
 
-    pending_users[email] = {'username': username, 'password': password}
-
-    otp = str(random.randint(100000,999999))
+    otp = str(random.randint(100000, 999999))
     otp_storage[email] = otp
-    send_email(email, otp)
+    pending_users[email] = {"username": username, "password": password}
 
-    return redirect(url_for('otp_page', email=email, source='register'))
+    if not send_email(email, otp):
+        return "<script>alert('OTP email failed. Try again later');history.back();</script>"
 
-# OTP verification
-@app.route('/verify-otp', methods=['POST'])
+    return redirect(url_for("otp_page", email=email, source="register"))
+
+@app.route("/verify-otp", methods=["POST"])
 def verify_otp():
-    email = request.form.get('email')
-    otp_input = request.form.get('otp')
-    source = request.form.get('source')  # "register" or "forgot"
+    email = request.form.get("email")
+    otp_input = request.form.get("otp")
+    source = request.form.get("source")
 
     if email in otp_storage and otp_storage[email] == otp_input:
+
         if source == "register":
-            user_data = pending_users.get(email)
-            if user_data:
-                hashed_pass = generate_password_hash(user_data['password'])
+            user = pending_users.get(email)
+            if user:
                 users_collection.insert_one({
-                    'username': user_data['username'],
-                    'email': email,
-                    'password': hashed_pass,
-                    'verified': True
+                    "username": user["username"],
+                    "email": email,
+                    "password": generate_password_hash(user["password"]),
+                    "verified": True
                 })
-                del otp_storage[email]
-                del pending_users[email]
-                return redirect(url_for('register_page', verified='true', username=user_data['username']))
-        elif source == "forgot":
-            del otp_storage[email]
-            return redirect(url_for('resetpassword_page', email=email))
-    return "<script>alert('Invalid OTP'); window.history.back();</script>"
+                otp_storage.pop(email, None)
+                pending_users.pop(email, None)
+                return redirect(url_for("register_page", verified="true", username=user["username"]))
 
-# Login
-@app.route('/login', methods=['POST'])
-def login_user():
-    username = request.form.get('username').strip()
-    password = request.form.get('password').strip()
+        if source == "forgot":
+            otp_storage.pop(email, None)
+            return redirect(url_for("resetpassword_page", email=email))
 
-    user = users_collection.find_one({'username': username})
+    return "<script>alert('Invalid OTP');history.back();</script>"
+
+@app.route("/login", methods=["POST"])
+def login():
+    username = request.form.get("username", "").strip()
+    password = request.form.get("password", "").strip()
+
+    user = users_collection.find_one({"username": username})
     if not user:
-        return "<script>alert('User not found'); window.history.back();</script>"
-    if not user.get('verified', False):
-        return "<script>alert('Please verify your email first'); window.history.back();</script>"
-    if check_password_hash(user['password'], password):
-        session['username'] = username
-        return redirect(url_for('main_page'))
+        return "<script>alert('User not found');history.back();</script>"
 
-    return "<script>alert('Incorrect password'); window.history.back();</script>"
+    if not user.get("verified", False):
+        return "<script>alert('Please verify your email');history.back();</script>"
 
-# Send OTP for forgot password
-@app.route('/send-otp', methods=['POST'])
+    if check_password_hash(user["password"], password):
+        session["username"] = username
+        return redirect(url_for("main_page"))
+
+    return "<script>alert('Incorrect password');history.back();</script>"
+
+@app.route("/send-otp", methods=["POST"])
 def send_otp_forgot():
-    email = request.form.get('email').strip()
-    user = users_collection.find_one({'email': email})
-    if not user:
-        return "<script>alert('Email not found'); window.history.back();</script>"
+    email = request.form.get("email", "").strip()
 
-    otp = str(random.randint(100000,999999))
+    if not users_collection.find_one({"email": email}):
+        return "<script>alert('Email not found');history.back();</script>"
+
+    otp = str(random.randint(100000, 999999))
     otp_storage[email] = otp
-    send_email(email, otp)
 
-    return redirect(url_for('otp_page', email=email, source='forgot'))
+    if not send_email(email, otp):
+        return "<script>alert('OTP email failed');history.back();</script>"
 
-# Reset password
-@app.route('/reset-password', methods=['POST'])
+    return redirect(url_for("otp_page", email=email, source="forgot"))
+
+@app.route("/reset-password", methods=["POST"])
 def reset_password():
-    email = request.form.get('email')
-    new_password = request.form.get('password')
+    email = request.form.get("email")
+    new_password = request.form.get("password")
 
     if not email or not new_password:
-        return "<script>alert('Email and password required'); window.history.back();</script>"
+        return "<script>alert('Missing fields');history.back();</script>"
 
-    user = users_collection.find_one({'email': email})
-    if user and check_password_hash(user['password'], new_password):
-        return "<script>alert('Cannot use previous password'); window.history.back();</script>"
+    user = users_collection.find_one({"email": email})
+    if user and check_password_hash(user["password"], new_password):
+        return "<script>alert('Cannot reuse old password');history.back();</script>"
 
-    hashed_password = generate_password_hash(new_password)
-    users_collection.update_one({'email': email}, {'$set': {'password': hashed_password}})
-    return redirect(url_for('login_page'))
+    users_collection.update_one(
+        {"email": email},
+        {"$set": {"password": generate_password_hash(new_password)}}
+    )
+    return redirect(url_for("login_page"))
 
 # ----------------------- RUN -----------------------
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
